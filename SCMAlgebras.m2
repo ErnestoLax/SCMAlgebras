@@ -71,6 +71,9 @@ Node
       I=(x_1^2*x_3,x_2*x_3^2*x_4,x_1*x_3^3*x_5);
       M=S^1/I;
       deficiencyModule(M,3)
+  SeeAlso
+    canonicalModule
+    isSCM
 ///);
 -------------------------------------------------------------------------
 deficiencyModule = method(TypicalValue=>Module);
@@ -122,6 +125,8 @@ Node
       I=(x_1^2*x_3,x_2*x_3^2*x_4,x_1*x_3^3*x_5);
       M=S^1/I;
       canonicalModule M
+  SeeAlso
+    deficiencyModule
 ///);
 -------------------------------------------------------------------------
 canonicalModule = method(TypicalValue=>Module);
@@ -169,6 +174,9 @@ Node
       E = {{1,2},{1,3},{1,4},{1,5},{1,6},{1,7},{1,8},{1,9},{1,10},{6,7},{8,9},{8,10},{9,10}};
       J=ideal(for e in E list x_(e#0)*y_(e#1)-x_(e#1)*y_(e#0));
       minDim J
+  SeeAlso
+    filterIdeal
+    isSCM
 ///);
 -------------------------------------------------------------------------
 minDim = method(TypicalValue=>ZZ);
@@ -210,6 +218,9 @@ Node
       E = {{1,2},{1,3},{1,4},{1,5},{1,6},{1,7},{1,8},{1,9},{1,10},{6,7},{8,9},{8,10},{9,10}};
       J=ideal(for e in E list x_(e#0)*y_(e#1)-x_(e#1)*y_(e#0));
       filterIdeal(J,5)
+  SeeAlso
+    minDim
+    isSCM
 ///);
 -------------------------------------------------------------------------
 filterIdeal = method(TypicalValue=>Ideal);
@@ -318,4 +329,66 @@ isSCM(Ideal) := I -> (
 beginDocumentation();
 multidoc(MyDoc);
 -------------------------------------------------------------------------
-end
+
+
+
+---------
+-- TESTS |
+--------------------------------------------------------------------------------------------
+
+--========================
+-- deficiencyModule test
+--========================
+TEST ///
+S = QQ[x_1..x_5]
+M = coker matrix {{x_1*x_2,0,0},{x_1*x_4,0,x_3*x_5}}
+assert(deficiencyModule(M,3)==0)
+///
+
+
+--========================
+-- canonicalModule test
+--========================
+TEST ///
+S = QQ[x_1..x_5]
+M = coker matrix {{x_1*x_2,0,0},{x_1*x_4,0,x_3*x_5}}
+assert(isCM canonicalModule(M))
+///
+
+
+--========================
+-- minDim test
+--========================
+TEST ///
+S = QQ[x_1..x_4,y_1..y_4]
+E = {{1, 2}, {1, 3}, {1, 4}, {2, 3}, {3, 4}}
+J = ideal(for e in E list x_(e#0)*y_(e#1)-x_(e#1)*y_(e#0));
+assert(minDim(J)==4)
+///
+
+
+--========================
+-- filterIdeal test
+--========================
+TEST ///
+S = QQ[x_1..x_4,y_1..y_4]
+E = {{1, 2}, {1, 3}, {1, 4}, {2, 3}, {3, 4}}
+J = ideal(for e in E list x_(e#0)*y_(e#1)-x_(e#1)*y_(e#0));
+--I = ideal (x_4*y_3-x_3*y_4,x_2*y_4-x_4*y_2,x_3*y_2-x_2*y_3,x_4*y_1-x_1*y_4,x_3*y_1-x_1*y_3,x_2*y_1-x_1*y_2)
+assert(filterIdeal(J,4)!=J)
+///
+
+
+--========================
+-- isSCM test
+--========================
+TEST ///
+S = QQ[x_1..x_4,y_1..y_4]
+E = {{1, 2}, {1, 3}, {1, 4}, {2, 3}, {3, 4}}
+J = ideal(for e in E list x_(e#0)*y_(e#1)-x_(e#1)*y_(e#0));
+assert(isSCM(J)==true)
+///
+
+
+-------------------------------------------------------------------------
+
