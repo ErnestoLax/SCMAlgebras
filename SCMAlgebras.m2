@@ -3,7 +3,7 @@
 newPackage(
     "SCMAlgebras",
     Version => "1.0",
-    Date => "September 30, 2024",
+    Date => "October 2, 2024",
     Authors => {{Name => "Ernesto Lax", Email => "erlax@unime.it", HomePage => "https://www.researchgate.net/profile/Ernesto-Lax"}},
     Headline => "a package to work with sequentially Cohen-Macaulay modules or ideals",
     Keywords => {"Commutative Algebra"},
