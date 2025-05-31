@@ -13,4 +13,7 @@ The functions introduced in the package are listed down below.
 | `canonicalModule(M)` | Computes the canonical module of M |
 | `minimumDimension(I)` | Computes the minimum dimension of the ideal I |
 | `filterIdeal(I,i)` | Computes the ith filter ideal of the ideal I |
+| `unmixedLayer(I,i)` | Computes the ith unmixed layer of the ideal I |
+| `isUnmixed(I)` | Checks if the ideal I is unmixed |
 | `isSCM(M)` | Checks if M is sequentially Cohen-Macaulay |
+| `isCCM(M)` | Checks if M is canonically Cohen-Macaulay |
