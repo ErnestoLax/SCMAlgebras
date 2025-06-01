@@ -320,12 +320,16 @@ Node
       whether the ideal $I$ is unmixed
   Description
     Text
-      For a homogeneous ideal $I\subset S$, the function checks if the $i$th unmixed layer of $I$, $U_i(I)$ is zero for all $1\leq i < d$, where $d=\dim S/I$ and if $U_d(I)=S/I.
+      For a homogeneous ideal $I\subset S$, the function checks if the $i$th unmixed layer of $I$, $U_i(I)$ is zero for all $1\leq i < d$, where $d=\dim S/I$ and if $U_d(I)=S/I$.
     Example
       S = QQ[x_1..x_10,y_1..y_10];
       E = {{1,2},{1,3},{1,4},{1,5},{1,6},{1,7},{1,8},{1,9},{1,10},{6,7},{8,9},{8,10},{9,10}};
       J=ideal(for e in E list x_(e#0)*y_(e#1)-x_(e#1)*y_(e#0));
       isUnmixed J
+  SeeAlso
+    unmixedLayer
+    isSCM
+    isCCM
 ///);
 -------------------------------------------------------------------------
 isUnmixed = method(TypicalValue=>Boolean);
@@ -378,6 +382,11 @@ Node
       E = {{1,2},{1,3},{1,4},{1,5},{1,6},{1,7},{1,8},{1,9},{1,10},{6,7},{8,9},{8,10},{9,10}};
       J=ideal(for e in E list x_(e#0)*y_(e#1)-x_(e#1)*y_(e#0));
       isSCM J
+  SeeAlso
+    filterIdeal
+    deficiencyModule
+    isUnmixed
+    isCCM
 ///);
 -------------------------------------------------------------------------
 isSCM = method(TypicalValue=>Boolean);
@@ -439,6 +448,11 @@ Node
       E = {{1,2},{1,3},{1,4},{1,5},{1,6},{1,7},{1,8},{1,9},{1,10},{6,7},{8,9},{8,10},{9,10}};
       J=ideal(for e in E list x_(e#0)*y_(e#1)-x_(e#1)*y_(e#0));
       isCCM J
+  SeeAlso
+    canonicalModule
+    deficiencyModule
+    isUnmixed
+    isSCM
 ///);
 -------------------------------------------------------------------------
 isCCM = method(TypicalValue=>Boolean);
