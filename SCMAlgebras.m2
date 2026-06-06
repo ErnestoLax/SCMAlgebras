@@ -21,7 +21,9 @@ export{
     "isSCM",
     "isCCM",
     -- Service
-    "minimumDimension"
+    "minimumDimension",
+    "radicalList",
+    "filterIdealCachedData"
 };
 
 
@@ -43,6 +45,7 @@ Node
 -------------
 -- FUNCTIONS |
 ---------------------------------------------------------------------------------------------
+
 --=======================================================================
 -- computes the ith module of deficiency of an ideal/module
 --=======================================================================
@@ -192,6 +195,28 @@ minimumDimension(Ideal) := I -> (
 
 
 --=======================================================================
+radicalList = method(TypicalValue=>List);
+radicalList(Ideal) := I -> (
+  D:=decompose I;
+  apply(D, Q -> (
+    P := radical Q;
+    {Q,dim P}
+  ))
+)
+--=======================================================================
+
+
+--=======================================================================
+filterIdealCachedData = method(TypicalValue=>List);
+filterIdealCachedData(List,Ideal,ZZ) := I -> (
+  S := ring I;
+  Pi := for c in select(L, l -> l#1 > i) list c#0;
+  intersect(Pi)
+)
+--=======================================================================
+
+
+--=======================================================================
 -- computes the ith filter ideal of I
 --=======================================================================
 MyDoc=concatenate(MyDoc,///
@@ -230,19 +255,23 @@ Node
 filterIdeal = method(TypicalValue=>Ideal);
 -------------------------------------------------------------------------
 filterIdeal(Ideal,ZZ) := Ideal => (I,i) -> (
-    S:=ring I;
-    d:=dim I;
-    d0:=minimumDimension I;
-    if i>-2 and i<d0 then (
-        Ii:=I;
-    ) else if i>=d0 and i<d then (
-        L:=apply(decompose I, Q -> {P := radical Q, dim P});
-        Pi:=for l in L when (l#1)>i list (l#0);
-        Ii=intersect(Pi);
-    ) else if i==d then (
-        Ii=ideal(S^1);
-    ) else error("Expected an integer greater than -2 and at most " | toString(d) | ".");
-    Ii
+  S := ring I;
+  d := dim I;
+  d0 := minimumDimension I;
+
+  if i < -1 or i > d then (
+    error("Expected an integer greater than -2 and at most " | toString(d));
+  );
+
+  if i < d0 then return I;
+
+  if i == d then return ideal(S^1);
+
+  L := radicalList I;
+
+  Ii := filterIdealCachedData(L,I,i);
+   
+  Ii
 )
 --=======================================================================
 
@@ -286,17 +315,22 @@ Node
 unmixedLayer = method();
 -------------------------------------------------------------------------
 unmixedLayer(Ideal,ZZ) := Ideal => (I,i) -> (
-    S:=ring I;
-    d:=dim I;
-    d0:=minimumDimension I;
-    if i>0 and i<d0 then (
-        Ui:=(I/I);
-    ) else if i>=d0 and i<d then (
-        Ui=filterIdeal(I,i)/filterIdeal(I,i-1);
-    ) else if i==d then (
-        Ui=S^1/filterIdeal(I,d-1);
-    ) else error("Expected an integer greater than 0 and at most " | toString(d) | ".");
-    Ui
+  S:=ring I;
+  d:=dim I;
+  d0:=minimumDimension I;
+
+  if i < 1 or i > d then (
+    error("Expected an integer greater than 0 and at most " | toString(d));
+  );
+
+  if i < d0 then return module(ideal(0_S));
+
+  if i == d then return (S^1/filterIdeal(I,d-1));
+
+  I := filterIdeal(I,i);
+  J := filterIdeal(I,i-1)
+   
+  I/J
 )
 --=======================================================================
 
@@ -403,15 +437,18 @@ isSCM(Module) := M -> (
 )
 ------------------------------------------------------------------------- 
 isSCM(Ideal) := I -> (
-    S:=ring I;
-    d:=dim I;
-    d0:=minimumDimension I;
-    for i from 0 to d-1 do (
-        Ii:=filterIdeal(I,i);
-        Si:=(S^1/Ii);
-        if depth Si < i+1 then return false;
-    );
-    true
+  S:=ring I;
+  d:=dim I;
+  d0:=minimumDimension I;
+  L := radicalList I;
+
+  for i from 0 to d-1 do (
+    Ii := filterIdealCachedData(L,I,i);
+    Si := (S^1/Ii);
+    if depth Si < i+1 then return false;
+  );
+
+  true
 )
 --=======================================================================
 
