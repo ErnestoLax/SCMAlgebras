@@ -15,7 +15,6 @@ For a more detailed mathematical description of the package, see the accompanyin
 | `canonicalModule(M)` | Computes the canonical module of $M$ |
 | `minimumDimension(I)` | Computes the minimum dimension of the ideal $I$ |
 | `filterIdeal(I,i)` | Computes the $i$-th filter ideal of $I$ |
-| `filterIdealFromData(L,I,i)` | Computes the $i$-th filter ideal of the ideal $I$ with the datas encoded by the `PrimaryDataList` $L$ |
 | `unmixedLayer(I,i)` | Computes the $i$-th unmixed layer of $I$ |
 | `isUnmixed(I)` | Checks whether the ideal $I$ is unmixed |
 | `isSCM(M)` | Checks whether $M$ is sequentially Cohen–Macaulay |

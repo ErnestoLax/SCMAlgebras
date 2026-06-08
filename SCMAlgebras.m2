@@ -23,8 +23,7 @@ export{
     "isSCM",
     "isCCM",
     -- Service
-    "minimumDimension",
-    "filterIdealFromData"
+    "minimumDimension"
 };
 
 
@@ -242,58 +241,6 @@ minimumDimension(Ideal) := I -> (
 
 
 --=======================================================================
--- computes the ith filter ideal of I with given PrimaryDataList
--- -- useful to cache informations on the primary decomposition
--- -- in order to avoid multiple calls of decompose(I)
---=======================================================================
-MyDoc=concatenate(MyDoc,///
-Node
-  Key
-    filterIdealFromData
-    (filterIdealFromData,PrimaryDataList,Ideal,ZZ)
-  Headline
-    Computes the $i$th filter ideal of $I$ via the primary decomposition informations stored in $L$.
-  Usage
-    filterIdealFromData(L,I,i)
-  Inputs
-	  L:PrimaryDataList
-    I:Ideal
-      a homogeneous ideal of the polynomial ring $S=K[x_1,\ldots,x_n]$, with $K$ a field
-    i:ZZ
-      an integer greater than -2
-  Outputs
-    J:Ideal
-      the $i$th filter ideal of $I$
-  Description
-    Text
-      Let $I\subset S$ be a homogeneous ideal, with $d=\dim S/I$, and let $I=\displaystyle\bigcap_{j=1}^r Q_j$ be the minimal primary decomposition of $I$.
-      For all $1\leq j\leq r$, let $P_j = \sqrt{Q_j}$ be the radical of $Q_j$. For all $-1\leq i\leq d$, the $i$th filter ideal of $I$ is $$I^{<i>} = \bigcap_{\dim S/{P_j}>i} Q_{j},$$
-      where $I^{<-1>}=I$ and $I^{<d>}=S$.
-
-			This version of the function avoids computing the primary decomposition of $I$ every time, useful when multiple calls are needed.
-    Example
-      S = QQ[x_1..x_10,y_1..y_10];
-      E = {{1,2},{1,3},{1,4},{1,5},{1,6},{1,7},{1,8},{1,9},{1,10},{6,7},{8,9},{8,10},{9,10}};
-      J=ideal(for e in E list x_(e#0)*y_(e#1)-x_(e#1)*y_(e#0));
-			L=getPrimaryData J;
-      filterIdealFromData(L,J,5)
-  SeeAlso
-		getPrimaryData
-		filterIdeal
-    unmixedLayer
-    minimumDimension
-    isSCM
-///);
--------------------------------------------------------------------------
-filterIdealFromData = method(TypicalValue => Ideal)
-filterIdealFromData(PrimaryDataList,Ideal,ZZ) := (PL,I,i) -> (
-  S := ring I;
-  Pi := for c in select(PL, l -> l#1 > i) list c#0;
-  intersect(Pi)
---=======================================================================
-
-
---=======================================================================
 -- computes the ith filter ideal of I
 --=======================================================================
 MyDoc=concatenate(MyDoc,///
@@ -301,6 +248,7 @@ Node
   Key
     filterIdeal
     (filterIdeal,Ideal,ZZ)
+		(filterIdeal,Ideal,ZZ,PrimaryDataList)
   Headline
     Computes the $i$th filter ideal of $I$.
   Usage
@@ -318,6 +266,8 @@ Node
       Let $I\subset S$ be a homogeneous ideal, with $d=\dim S/I$, and let $I=\displaystyle\bigcap_{j=1}^r Q_j$ be the minimal primary decomposition of $I$.
       For all $1\leq j\leq r$, let $P_j = \sqrt{Q_j}$ be the radical of $Q_j$. For all $-1\leq i\leq d$, the $i$th filter ideal of $I$ is $$I^{<i>} = \bigcap_{\dim S/{P_j}>i} Q_{j},$$
       where $I^{<-1>}=I$ and $I^{<d>}=S$.
+
+			In case a PrimaryDataList $L$ is given as optional input, the function uses the informations stored in $L$ to avoid computing the primary decomposition of $I$ every time, useful when dealing with multiple calls.
     Example
       S = QQ[x_1..x_10,y_1..y_10];
       E = {{1,2},{1,3},{1,4},{1,5},{1,6},{1,7},{1,8},{1,9},{1,10},{6,7},{8,9},{8,10},{9,10}};
@@ -325,7 +275,6 @@ Node
       filterIdeal(J,5)
   SeeAlso
 		getPrimaryData
-		filterIdealFromData
     unmixedLayer
     minimumDimension
     isSCM
@@ -346,9 +295,28 @@ filterIdeal(Ideal,ZZ) := Ideal => (I,i) -> (
   if i == d then return ideal(S^1);
 
 	L := getPrimaryData(I);
-  Ii := filterIdealFromData(L,I,i);
-   
-  Ii
+  
+	Pi := for c in select(L, l -> l#1 > i) list c#0;
+
+  intersect(Pi)
+)
+-------------------------------------------------------------------------
+filterIdeal(Ideal,ZZ,PrimaryDataList) := Ideal => (I,i,L) -> (
+  S := ring I;
+  d := dim I;
+  d0 := minimumDimension I;
+
+  if i < -1 or i > d then (
+    error("Expected an integer greater than -2 and at most " | toString(d));
+  );
+
+  if i < d0 then return I;
+  if i == d then return ideal(S^1);
+
+
+  Pi := for c in select(L, l -> l#1 > i) list c#0;
+
+  intersect(Pi)
 )
 --=======================================================================
 
@@ -377,15 +345,17 @@ Node
     Text
       Let $I\subset S$ be a homogeneous ideal, with $d=\dim S/I$, and let $I=\displaystyle\bigcap_{j=1}^r Q_j$ be the minimal primary decomposition of $I$.
       For all $1\leq j\leq r$, let $P_j = \sqrt{Q_j}$ be the radical of $Q_j$. For all $-1\leq i\leq d$, the $i$th filter ideal of $I$ is $$I^{<i>} = \bigcap_{\dim S/{P_j}>i} Q_{j},$$
-      where $I^{<-1>}=I$ and $I^{<d>}=S$. The $i$th unmixed layer of $I$ is defined as $U_i(I)=I^{<i>}/I^{<i-1>}$.
+      where $I^{<-1>}=I$ and $I^{<d>}=S$. The $i$th unmixed layer of $I$ is defined as $U_i(I)=I^{<i>}/I^{<i-1>}$ for all $i=0,\ldots,d$.
     Example
       S = QQ[x_1..x_10,y_1..y_10];
       E = {{1,2},{1,3},{1,4},{1,5},{1,6},{1,7},{1,8},{1,9},{1,10},{6,7},{8,9},{8,10},{9,10}};
       J=ideal(for e in E list x_(e#0)*y_(e#1)-x_(e#1)*y_(e#0));
       unmixedLayer(J,7)
   SeeAlso
+		getPrimaryData
     filterIdeal
     minimumDimension
+		isUnmixed
     isSCM
 ///);
 -------------------------------------------------------------------------
@@ -398,15 +368,16 @@ unmixedLayer(Ideal,ZZ) := Ideal => (I,i) -> (
 
 	L := getPrimaryData(I);
 
-  if i < 1 or i > d then (
+  if i < 0 or i > d then (
     error("Expected an integer greater than 0 and at most " | toString(d));
   );
 
   if i < d0 then return module(ideal(0_S));
+
   if i == d then return (S^1/filterIdealFromData(L,I,d-1));
 
-  J := filterIdealFromData(L,I,i);
-  K := filterIdealFromData(L,I,i-1);
+  J := filterIdeal(I,i,L);
+  K := filterIdeal(I,i-1,L);
    
   J/K
 )
@@ -497,6 +468,7 @@ Node
       J=ideal(for e in E list x_(e#0)*y_(e#1)-x_(e#1)*y_(e#0));
       isSCM J
   SeeAlso
+		getPrimaryData
     filterIdeal
     deficiencyModule
     isUnmixed
@@ -523,7 +495,7 @@ isSCM(Ideal) := I -> (
   L := getPrimaryData I;
 
   for i from 0 to d-1 do (
-    Ii := filterIdealFromData(L,I,i);
+    Ii := filterIdeal(I,i,L);
     Si := (S^1/Ii);
     if depth Si < i+1 then return false;
   );
@@ -639,19 +611,6 @@ S = QQ[x_1..x_4,y_1..y_4]
 E = {{1, 2}, {1, 3}, {1, 4}, {2, 3}, {3, 4}}
 J = ideal(for e in E list x_(e#0)*y_(e#1)-x_(e#1)*y_(e#0));
 assert(minimumDimension(J)==4)
-///
-
-
---========================
--- filterIdealFromData test
---========================
-TEST ///
-S = QQ[x_1..x_4,y_1..y_4]
-E = {{1, 2}, {1, 3}, {1, 4}, {2, 3}, {3, 4}}
-J = ideal(for e in E list x_(e#0)*y_(e#1)-x_(e#1)*y_(e#0));
-L = getPrimaryData J;
---I = ideal (x_4*y_3-x_3*y_4,x_2*y_4-x_4*y_2,x_3*y_2-x_2*y_3,x_4*y_1-x_1*y_4,x_3*y_1-x_1*y_3,x_2*y_1-x_1*y_2)
-assert(filterIdealFromData(J,4)!=J)
 ///
 
 
