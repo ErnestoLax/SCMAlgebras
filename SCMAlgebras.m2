@@ -374,7 +374,7 @@ unmixedLayer(Ideal,ZZ) := Ideal => (I,i) -> (
 
   if i < d0 then return module(ideal(0_S));
 
-  if i == d then return (S^1/filterIdealFromData(L,I,d-1));
+  if i == d then return (S^1/filterIdeal(I,d-1,L));
 
   J := filterIdeal(I,i,L);
   K := filterIdeal(I,i-1,L);
