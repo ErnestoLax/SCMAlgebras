@@ -1,9 +1,8 @@
 -- -*- coding: utf-8 -*-
-
 newPackage(
     "SCMAlgebras",
-    Version => "1.1",
-    Date => "June , 2026",
+    Version => "1.2",
+    Date => "June 08, 2026",
     Authors => {{Name => "Ernesto Lax", Email => "erlax@unime.it", HomePage => "https://sites.google.com/view/ernestolax"}},
     Headline => "sequentially Cohen-Macaulay modules or ideals",
     Keywords => {"Commutative Algebra"},
@@ -43,7 +42,7 @@ Node
 ///);
 
 
-
+-------------------------------------------------------------------------------------------- CODE
 --=======================================================================
 -- defines a new type PrimaryDataList
 --=======================================================================
@@ -160,7 +159,7 @@ Node
     (canonicalModule,Module)
     (canonicalModule,Ideal)
   Headline
-    computes the canonical module of a module $M$ or an ideal $I$.
+    Computes the canonical module of a module $M$ or an ideal $I$.
   Usage
     canonicalModule M
     canonicalModule I
@@ -210,7 +209,7 @@ Node
     minimumDimension
     (minimumDimension,Ideal)
   Headline
-    computes the minimum dimension of $I$.
+    Computes the minimum dimension of $I$.
   Usage
     minimumDimension I
   Inputs
@@ -253,7 +252,7 @@ Node
     filterIdealFromData
     (filterIdealFromData,PrimaryDataList,Ideal,ZZ)
   Headline
-    computes the $i$th filter ideal of $I$ via the primary decomposition informations stored in $L$.
+    Computes the $i$th filter ideal of $I$ via the primary decomposition informations stored in $L$.
   Usage
     filterIdealFromData(L,I,i)
   Inputs
@@ -303,7 +302,7 @@ Node
     filterIdeal
     (filterIdeal,Ideal,ZZ)
   Headline
-    computes the $i$th filter ideal of $I$.
+    Computes the $i$th filter ideal of $I$.
   Usage
     filterIdeal(I,i)
   Inputs
@@ -344,7 +343,6 @@ filterIdeal(Ideal,ZZ) := Ideal => (I,i) -> (
   );
 
   if i < d0 then return I;
-
   if i == d then return ideal(S^1);
 
 	L := getPrimaryData(I);
@@ -364,7 +362,7 @@ Node
     unmixedLayer
     (unmixedLayer,Ideal,ZZ)
   Headline
-    computes the $i$th unmixed layer of $I$.
+    Computes the $i$th unmixed layer of $I$.
   Usage
     unmixedLayer(I,i)
   Inputs
@@ -405,7 +403,6 @@ unmixedLayer(Ideal,ZZ) := Ideal => (I,i) -> (
   );
 
   if i < d0 then return module(ideal(0_S));
-
   if i == d then return (S^1/filterIdealFromData(L,I,d-1));
 
   J := filterIdealFromData(L,I,i);
@@ -425,7 +422,7 @@ Node
     isUnmixed
     (isUnmixed,Ideal)
   Headline
-    checks whether an ideal is unmixed
+    Checks whether an ideal is unmixed
   Usage
     isUnmixed I
   Inputs
@@ -476,7 +473,7 @@ Node
     (isSCM,Module)
     (isSCM,Ideal)
   Headline
-    checks whether a module or an ideal is sequentially Cohen-Macaulay
+    Checks whether a module or an ideal is sequentially Cohen-Macaulay
   Usage
     isSCM M
     isSCM I
@@ -546,7 +543,7 @@ Node
     (isCCM,Module)
     (isCCM,Ideal)
   Headline
-    checks whether a module or an ideal is canonically Cohen-Macaulay
+    Checks whether a module or an ideal is canonically Cohen-Macaulay
   Usage
     isCCM M
     isCCM I
@@ -591,19 +588,18 @@ isCCM(Ideal) := I -> (
   isCCM(S^1/I)
 )
 --=======================================================================
+------------------------------------------------------------------------------------------------
 
 
------------------
--- DOCUMENTATION |
---------------------------------------------------------------------------------------------
+
+-------------------------------------------------------------------------------------------- DOCUMENTATION
 beginDocumentation();
 multidoc(MyDoc);
--------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------
 
 
----------
--- TESTS |
---------------------------------------------------------------------------------------------
+
+-------------------------------------------------------------------------------------------- TESTS
 --========================
 -- getPrimaryData test
 --========================
@@ -643,6 +639,19 @@ S = QQ[x_1..x_4,y_1..y_4]
 E = {{1, 2}, {1, 3}, {1, 4}, {2, 3}, {3, 4}}
 J = ideal(for e in E list x_(e#0)*y_(e#1)-x_(e#1)*y_(e#0));
 assert(minimumDimension(J)==4)
+///
+
+
+--========================
+-- filterIdealFromData test
+--========================
+TEST ///
+S = QQ[x_1..x_4,y_1..y_4]
+E = {{1, 2}, {1, 3}, {1, 4}, {2, 3}, {3, 4}}
+J = ideal(for e in E list x_(e#0)*y_(e#1)-x_(e#1)*y_(e#0));
+L = getPrimaryData J;
+--I = ideal (x_4*y_3-x_3*y_4,x_2*y_4-x_4*y_2,x_3*y_2-x_2*y_3,x_4*y_1-x_1*y_4,x_3*y_1-x_1*y_3,x_2*y_1-x_1*y_2)
+assert(filterIdealFromData(J,4)!=J)
 ///
 
 
@@ -702,4 +711,4 @@ J = ideal(for e in E list x_(e#0)*y_(e#1)-x_(e#1)*y_(e#0));
 assert(isCCM(J)==true)
 ///
 
--------------------------------------------------------------------------
+-------------------------------------------------------------------------........................
