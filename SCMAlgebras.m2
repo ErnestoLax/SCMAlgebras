@@ -1,29 +1,33 @@
 -- -*- coding: utf-8 -*-
 newPackage(
-    "SCMAlgebras",
-    Version => "1.2",
-    Date => "June 08, 2026",
-    Authors => {{Name => "Ernesto Lax", Email => "erlax@unime.it", HomePage => "https://sites.google.com/view/ernestolax"}},
-    Headline => "sequentially Cohen-Macaulay modules or ideals",
-    Keywords => {"Commutative Algebra"},
-    PackageExports => {"Depth","MinimalPrimes"},
-    DebuggingMode => false
+  "SCMAlgebras",
+  Version => "1.2",
+  Date => "June 08, 2026",
+  Authors => {{
+    Name => "Ernesto Lax",
+    Email => "erlax@unime.it",
+    HomePage => "https://sites.google.com/view/ernestolax"
+  }},
+  Headline => "sequentially Cohen-Macaulay modules or ideals",
+  Keywords => {"Commutative Algebra"},
+  PackageExports => {"Depth","MinimalPrimes"},
+  DebuggingMode => false
 )
 
 export{
-    -- New type and constructor
-		"PrimaryDataList",
-    "getPrimaryData",
-    -- Methods
-    "deficiencyModule",
-    "canonicalModule",
-    "filterIdeal",
-    "unmixedLayer",
-    "isUnmixed",
-    "isSCM",
-    "isCCM",
-    -- Service
-    "minimumDimension"
+  -- New type and constructor
+  "PrimaryDataList",
+  "getPrimaryData",
+  -- Methods
+  "deficiencyModule",
+  "canonicalModule",
+  "filterIdeal",
+  "unmixedLayer",
+  "isUnmixed",
+  "isSCM",
+  "isCCM",
+  -- Service
+  "minimumDimension"
 };
 
 
@@ -69,7 +73,7 @@ Node
     getPrimaryData
     (getPrimaryData,Ideal)
   Headline
-    Creates a PrimaryDataList
+    Creates the PrimaryDataList of the ideal $I$.
   Usage
     getPrimaryData(I)
   Inputs
@@ -248,7 +252,7 @@ Node
   Key
     filterIdeal
     (filterIdeal,Ideal,ZZ)
-		(filterIdeal,Ideal,ZZ,PrimaryDataList)
+    (filterIdeal,Ideal,ZZ,PrimaryDataList)
   Headline
     Computes the $i$th filter ideal of $I$.
   Usage
@@ -267,7 +271,7 @@ Node
       For all $1\leq j\leq r$, let $P_j = \sqrt{Q_j}$ be the radical of $Q_j$. For all $-1\leq i\leq d$, the $i$th filter ideal of $I$ is $$I^{<i>} = \bigcap_{\dim S/{P_j}>i} Q_{j},$$
       where $I^{<-1>}=I$ and $I^{<d>}=S$.
 
-			In case a PrimaryDataList $L$ is given as optional input, the function uses the informations stored in $L$ to avoid computing the primary decomposition of $I$ every time, useful when dealing with multiple calls.
+			In case a CODE(PrimaryDataList) $L$ is given as optional input, the function uses the informations stored in $L$ to avoid computing the primary decomposition of $I$ every time, useful when dealing with multiple calls.
     Example
       S = QQ[x_1..x_10,y_1..y_10];
       E = {{1,2},{1,3},{1,4},{1,5},{1,6},{1,7},{1,8},{1,9},{1,10},{6,7},{8,9},{8,10},{9,10}};
@@ -579,7 +583,7 @@ TEST ///
 S = QQ[x_1..x_4,y_1..y_4]
 E = {{1, 2}, {1, 3}, {1, 4}, {2, 3}, {3, 4}}
 J = ideal(for e in E list x_(e#0)*y_(e#1)-x_(e#1)*y_(e#0));
-assert(getPrimaryData != {})
+assert(getPrimaryData(J) != {})
 ///
 
 
@@ -599,7 +603,7 @@ assert(deficiencyModule(M,3)==0)
 TEST ///
 S = QQ[x_1..x_5]
 M = coker matrix {{x_1*x_2,0,0},{x_1*x_4,0,x_3*x_5}}
-assert(isCM canonicalModule(M))
+assert(isCM(canonicalModule(M)))
 ///
 
 
@@ -645,7 +649,7 @@ TEST ///
 S = QQ[x_1..x_4,y_1..y_4]
 E = {{1, 2}, {1, 3}, {1, 4}, {2, 3}, {2,4}, {3, 4}}
 J = ideal(for e in E list x_(e#0)*y_(e#1)-x_(e#1)*y_(e#0));
-assert(isUnmixed(J)==true)
+assert(isUnmixed(J))
 ///
 
 
@@ -656,7 +660,7 @@ TEST ///
 S = QQ[x_1..x_4,y_1..y_4]
 E = {{1, 2}, {1, 3}, {1, 4}, {2, 3}, {3, 4}}
 J = ideal(for e in E list x_(e#0)*y_(e#1)-x_(e#1)*y_(e#0));
-assert(isSCM(J)==true)
+assert(isSCM(J))
 ///
 
 
@@ -667,7 +671,7 @@ TEST ///
 S = QQ[x_1..x_4,y_1..y_4]
 E = {{1, 2}, {1, 3}, {1, 4}, {2, 3}, {3, 4}}
 J = ideal(for e in E list x_(e#0)*y_(e#1)-x_(e#1)*y_(e#0));
-assert(isCCM(J)==true)
+assert(isCCM(J))
 ///
 
 -------------------------------------------------------------------------........................
